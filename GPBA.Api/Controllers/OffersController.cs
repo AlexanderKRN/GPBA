@@ -10,8 +10,8 @@ namespace GPBA.Api.Controllers;
 public class OffersController : ApplicationController
 {
     /// <summary>
-    /// Получение списка офферов по поиску Бренд/Модель/Поставщик,
-    /// с сортирровкой результата по ключу brand/model/иное
+    /// Получение списка офферов поиском по бренду /модели /наименованию поставщика,
+    /// с сортировкой результата по ключу brand /model /иное
     /// </summary>
     /// <param name="request"></param>
     /// <param name="handler"></param>
