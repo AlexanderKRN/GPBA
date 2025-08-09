@@ -15,13 +15,6 @@ public interface ISupplierRepository
     Task Add(Supplier supplier, CancellationToken ct);
 
     /// <summary>
-    /// Метод получения всех поставщиков
-    /// </summary>
-    /// <param name="ct"></param>
-    /// <returns></returns>
-    Task<IReadOnlyList<Supplier>> GetAll(CancellationToken ct);
-
-    /// <summary>
     /// Метод получения поставщика по ID
     /// </summary>
     /// <param name="id"></param>
@@ -41,5 +34,5 @@ public interface ISupplierRepository
     /// </summary>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<IReadOnlyList<Offer>> GetOffers(CancellationToken ct);
+    Task<IReadOnlyList<OfferDto>> GetOffers(string? searchItem, CancellationToken ct);
 }

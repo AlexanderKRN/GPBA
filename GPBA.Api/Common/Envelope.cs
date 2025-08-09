@@ -61,7 +61,7 @@ public class Envelope
 public class ErrorInfo
 {
     /// <summary>
-    /// Кодаошибки
+    /// Кода ошибки
     /// </summary>
     public string? ErrorCode { get; }
 
@@ -75,6 +75,11 @@ public class ErrorInfo
     /// </summary>
     public string? InvalidField { get; }
 
+    /// <summary>
+    /// Конструктор
+    /// </summary>
+    /// <param name="error"></param>
+    /// <param name="invalidField"></param>
     public ErrorInfo(Error? error, string? invalidField = null)
     {
         ErrorCode = error?.Code;

@@ -7,7 +7,6 @@ using GPBA.Domain.Entities;
 using GPBA.Infrastructure.Dapper;
 using GPBA.Infrastructure.DbContexts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace GPBA.Infrastructure.Repository;
 
@@ -21,8 +20,7 @@ public class SupplierRepository : ISupplierRepository
 
     public SupplierRepository(
         ApplicationDbContext dbContext,
-        DapperContext dapperContext,
-        IConfiguration configuration)
+        DapperContext dapperContext)
     {
         _dbContext = dbContext;
         _dapperContext = dapperContext;
@@ -53,31 +51,34 @@ public class SupplierRepository : ISupplierRepository
     }
 
     /// <summary>
-    /// Метод получения всех поставщиков
-    /// </summary>
-    /// <param name="ct"></param>
-    /// <returns></returns>
-    public async Task<IReadOnlyList<Supplier>> GetAll(CancellationToken ct)
-    {
-        var suppliers = await _dbContext.Suppliers
-            .AsNoTracking()
-            .ToListAsync(ct);
-
-        return suppliers;
-    }
-
-    /// <summary>
     /// Метод получения всех офферов
     /// </summary>
     /// <param name="ct"></param>
     /// <returns></returns>
-    public async Task<IReadOnlyList<Offer>> GetOffers(CancellationToken ct)
+    public async Task<IReadOnlyList<OfferDto>> GetOffers(
+        string? searchItem,
+        CancellationToken ct)
     {
-        var offers = await _dbContext.Offers
+        return await _dbContext.Offers
+            .Join(
+                _dbContext.Suppliers,
+                o => o.SupplierId,
+                s => s.Id,
+                (o, s) => new
+                {
+                    o.Id,
+                    o.Brand,
+                    o.Model,
+                    SupplierName = s.Name,
+                    o.CreatedAt
+                })
+            .Where(x => string.IsNullOrWhiteSpace(searchItem)
+                    || x.Brand.ToUpper().Contains(searchItem)
+                    || x.Model.ToUpper().Contains(searchItem)
+                    || x.SupplierName.ToUpper().Contains(searchItem))
+            .Select(x => new OfferDto(x.Id, x.Brand, x.Model, x.SupplierName, x.CreatedAt))
             .AsNoTracking()
             .ToListAsync(ct);
-
-        return offers;
     }
 
     /// <summary>

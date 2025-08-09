@@ -28,42 +28,18 @@ public class GetOffersHandler
     {
         try
         {
-            var suppliers = await _supplierRepository.GetAll(ct);
-            var offers = await _supplierRepository.GetOffers(ct);
+            var offers = await _supplierRepository.GetOffers(request.SearchItem, ct);
 
-            List<OfferDto> offerDtos = [];
-
-            foreach (var offer in offers)
+            Func<OfferDto, object> selectorKey = request.SortItem.ToLower() switch
             {
-                var supplierName = suppliers.FirstOrDefault(
-                    s => s.Id == offer.SupplierId)?.Name ?? string.Empty;
+                "brand" => o => o.Brand,
+                "model" => o => o.Model,
+                _ => p => p.SupplierName
+            };
 
-                var dto = new OfferDto(
-                    offer.Id,
-                    offer.Brand,
-                    offer.Model,
-                    supplierName,
-                    offer.CreatedAt);
-
-                offerDtos.Add(dto);
-            }
-
-            Func<OfferDto, object> selectorKey = request.SortItem
-                .ToLower() switch
-                    {
-                        "brand" => o => o.Brand,
-                        "model" => o => o.Model,
-                        _ => p => p.SupplierName
-                    };
-
-            var dtosSearch = offerDtos
-                    .Where(n => string.IsNullOrWhiteSpace(request.SearchItem)
-                        || n.Brand.Contains(request.SearchItem, StringComparison.CurrentCultureIgnoreCase)
-                        || n.Model.Contains(request.SearchItem, StringComparison.CurrentCultureIgnoreCase)
-                        || n.SupplierName.Contains(request.SearchItem, StringComparison.CurrentCultureIgnoreCase))
-                    .OrderBy(selectorKey);
-
-            return new GetOffersResponse(dtosSearch, offers.Count);
+            return new GetOffersResponse(
+                offers.OrderBy(selectorKey),
+                offers.Count);
         }
         catch (Exception e)
         {

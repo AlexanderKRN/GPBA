@@ -4,8 +4,15 @@ using System.Reflection;
 
 namespace GPBA.Api;
 
+/// <summary>
+/// Основной класс приложения
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// Основной метод приложения
+    /// </summary>
+    /// <param name="args"></param>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
